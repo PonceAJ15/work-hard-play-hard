@@ -1,0 +1,274 @@
+"data-types": [
+	{
+		"type": "byte",
+		"size": 1
+	},
+	{
+		"type": "char",
+		"size": 1
+	},
+	{
+		"type": "int",
+		"size": 4
+	},
+	{
+		"type": "long",
+		"size": 8
+	},
+	{
+		"type": "hash",
+		"size": 32 
+	},
+	{
+		"type": "byte_array",
+		"size": {
+			"type": "byte",
+			"value": null
+		}
+	},
+	{
+		"type": "string",
+		"size": { 
+			"type": "byte",
+			"value": null
+		}
+	}
+]
+"packets": [
+	{
+		"package": "client-server-packets",
+		"packets": [
+			{
+				"packet": "SERVER-GREETING",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 0
+					},
+					{
+					    "name": "VERSION", 
+						"type": "long",
+						"value": 0
+					},
+					{
+						"name": "LINE-END" 
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "CLIENT-RESPONSE",
+				"definition": [
+					{ 
+						"name": "HEADER",
+						"type": "byte",
+						"value": 1
+					},
+					{ 
+						"name": "NAME", 
+						"type": "string",
+						"value": null
+					},
+					{ 
+						"name": "LINE-END"
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-ACCEPT",
+				"definition": [
+					{
+						"name": "HEADER", 
+						"type": "byte",
+						"value": 2
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-DENY",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 3
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "CLIENT-JOB-REQUEST",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 4				
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-JOB-RESPONSE",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 5
+					},
+					{
+						"name": "ADDRESS",
+						"type": "byte_array",
+						"value": {
+							"size": 20,
+							"value": null
+						}
+					},
+					{
+						"name": "GLOBAL-NONCE",
+						"type": "int",
+						"value": null
+					},
+					{
+						"name": "JOB-NONCE",
+						"type": "int",
+						"value": null
+					},
+					{
+						"name": "DIFFICULTY",
+						"type": "hash",
+						"value": null
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "CLIENT-WORK-MESSAGE",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 6
+					},
+					{
+						"name": "SOLUTION",
+						"type": "int",
+						"value": null
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-WORK-ACCEPT",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 7
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-WORK-DENY",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 8
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "SERVER-WORK-REQUEST",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 9
+					},
+					{
+						"name": "ADDRESS",
+						"type": "byte_array",
+						"value": {
+							"size": 20,
+							"value": null
+						}
+					},
+					{
+						"name": "GLOBAL-NONCE", 
+						"type": "int",
+						"value": null
+					},
+					{
+						"name": "JOB-NONCE",
+						"type": "int",
+						"value": null
+					},
+					{
+						"name": "DIFFICULTY",
+						"type": "hash",
+						"value": null
+					},
+					{	
+						"name": "INVOICE",
+						"type": "string",
+						"value": null
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			},
+			{
+				"packet": "CLIENT-WORK-DENY",
+				"definition": [
+					{
+						"name": "HEADER",
+						"type": "byte",
+						"value": 10
+					},
+					{
+						"name": "LINE-END",
+						"type": "string",
+						"value": "\r\n"
+					}
+				]
+			}
+		]
+	}
+]
