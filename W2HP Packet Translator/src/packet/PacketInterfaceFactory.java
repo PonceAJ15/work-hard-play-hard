@@ -42,7 +42,7 @@ public final class PacketInterfaceFactory
 	 * @param bindings instance of enumerator for packet field bindings
 	 * @return a PacketInterface object to read and write packets
 	 */
-	public <P extends Enum<P> & FieldLabelList<T>, T extends Enum<T> & FieldLabel> PacketInterface<P, T> getInterface(String _package, P bindings)
+	public <P extends Enum<P> & FieldLabelList<T>, T extends Enum<T> & FieldLabel> PacketInterface<P, T> getInterface(String _package, Class<P> bindings)
 	{
 		return new PacketInterface<P, T>(PACKET_DEFINITIONS.get(_package), bindings, KEY);
 	}

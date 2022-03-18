@@ -153,15 +153,15 @@ public final class PacketInterface<Packet extends Enum<Packet> & FieldLabelList<
 	private final Map<Byte, Packet> READER_HEADER_BINDINGS;
 
 	@SuppressWarnings("unchecked") //No ClassCastException risk, type erasure makes it impossible to check cast
-	public PacketInterface(Map<String, List<PacketDataSlot>> definitions, Packet bindings, PacketInterfaceFactoryKey key)
+	public PacketInterface(Map<String, List<PacketDataSlot>> definitions, Class<Packet> bindings, PacketInterfaceFactoryKey key)
 	{
 		if(key == null || key.secret != true)
 			throw new SecurityException("PacketInterface can only be instantiated by PacketInterfaceFactory.");
-		READER_INDEX_BINDINGS = new EnumMap<Packet, EnumMap<DataSlot, Byte>>((Class<Packet>)bindings.getClass());
-		WRITER_HEADER_BINDINGS = new EnumMap<Packet, Byte>((Class<Packet>)bindings.getClass());
+		READER_INDEX_BINDINGS = new EnumMap<Packet, EnumMap<DataSlot, Byte>>(bindings);
+		WRITER_HEADER_BINDINGS = new EnumMap<Packet, Byte>(bindings);
 		READER_HEADER_BINDINGS = new HashMap<Byte, Packet>();
 		
-		for(Packet packet: (Packet[])bindings.getClass().getEnumConstants())
+		for(Packet packet: bindings.getEnumConstants())
 		{
 			//get definition of packet
 			List<PacketDataSlot> definition = definitions.get(packet.getLabel());
@@ -182,7 +182,7 @@ public final class PacketInterface<Packet extends Enum<Packet> & FieldLabelList<
 			}
 			
 			//bind packet enumerator constant to data slot list
-			EnumMap<DataSlot, Byte> dataSlots = new EnumMap<DataSlot, Byte>(bindings.getFieldClass());
+			EnumMap<DataSlot, Byte> dataSlots = new EnumMap<DataSlot, Byte>(packet.getFieldClass());
 			READER_INDEX_BINDINGS.put(packet, dataSlots);
 			
 			//bind field enumerator constant to data slot
