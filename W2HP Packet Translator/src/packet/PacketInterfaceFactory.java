@@ -20,13 +20,13 @@ public final class PacketInterfaceFactory
 	//Work around for lack of friend classes in java
 	public static final class PacketInterfaceFactoryKey
 	{
-		public boolean secret = false;
+		public final boolean secret;
 		private PacketInterfaceFactoryKey() {secret = true;}
 	};
-	static final PacketInterfaceFactoryKey KEY = new PacketInterfaceFactoryKey();
+	private static final PacketInterfaceFactoryKey KEY = new PacketInterfaceFactoryKey();
 	
 	//package > packet > data slots
-	private final HashMap<String, HashMap<String, List<PacketDataSlot>>> PACKET_DEFINITIONS = 
+	private final HashMap<String, HashMap<String, List<PacketDataSlot>>> packetDefinitions = 
 			  new HashMap<String, HashMap<String, List<PacketDataSlot>>>();
 	
 	public PacketInterfaceFactory(String packetDefinitionPath) throws IOException, ParseException
@@ -47,7 +47,7 @@ public final class PacketInterfaceFactory
 	 */
 	public <P extends Enum<P> & FieldLabelList<T>, T extends Enum<T> & FieldLabel> PacketInterface<P, T> getInterface(String _package, Class<P> bindings)
 	{
-		return new PacketInterface<P, T>(PACKET_DEFINITIONS.get(_package), bindings, KEY);
+		return new PacketInterface<P, T>(packetDefinitions.get(_package), bindings, KEY);
 	}
 
 	/*
@@ -83,7 +83,7 @@ public final class PacketInterfaceFactory
 			//package
 			JSONObject packetPackage = (JSONObject)packetPackageObject;
 			HashMap<String, List<PacketDataSlot>> _package = new HashMap<String, List<PacketDataSlot>>(); 
-			PACKET_DEFINITIONS.put(packetPackage.getString("package"), _package);
+			packetDefinitions.put(packetPackage.getString("package"), _package);
 			for(Object packetObject: packetPackage.getJSONArray("packets"))
 			{
 				//packet

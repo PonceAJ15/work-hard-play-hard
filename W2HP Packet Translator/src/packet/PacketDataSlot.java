@@ -3,59 +3,50 @@ package packet;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import lombok.Data;
 import util.Type;
 
+@Data
 public class PacketDataSlot
 {
-	private final String NAME;
-	private final Type TYPE;
-	private final Object VALUE;
-	public PacketDataSlot(String name, Type type, Object value)
-	{
-		this.NAME = name;
-		this.TYPE = type;
-		this.VALUE = value;
-	}
+	private final String name;
+	private final Type type;
+	private final Object value;
+	
 	public byte getByte()
 	{
-		if(TYPE != Type.BYTE)
-			throw new UnsupportedOperationException("Method getByte() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return ((Number)VALUE).byteValue();
+		if(type != Type.BYTE)
+			throw new UnsupportedOperationException("Method getByte() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return ((Number)value).byteValue();
 	}
 	public char getChar()
 	{
-		if(TYPE != Type.CHAR)
-			throw new UnsupportedOperationException("Method getChar() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return ((String)VALUE).charAt(0);
+		if(type != Type.CHAR)
+			throw new UnsupportedOperationException("Method getChar() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return ((String)value).charAt(0);
 	}
 	public int getInt()
 	{
-		if(TYPE != Type.INT)
-			throw new UnsupportedOperationException("Method getInt() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return ((Number)VALUE).intValue();
+		if(type != Type.INT)
+			throw new UnsupportedOperationException("Method getInt() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return ((Number)value).intValue();
 	}
 	public long getLong()
 	{
-		if(TYPE != Type.LONG)
-			throw new UnsupportedOperationException("Method getLong() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return ((Number)VALUE).longValue();
+		if(type != Type.LONG)
+			throw new UnsupportedOperationException("Method getLong() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return ((Number)value).longValue();
 	}
 	public byte[] getHash()
 	{
-		if(TYPE != Type.HASH)
-			throw new UnsupportedOperationException("Method getHash() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return new BigInteger(((BigDecimal)VALUE).toPlainString()).toByteArray();
+		if(type != Type.HASH)
+			throw new UnsupportedOperationException("Method getHash() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return new BigInteger(((BigDecimal)value).toPlainString()).toByteArray();
 	}
 	public String getString()
 	{
-		if(TYPE != Type.STRING)
-			throw new UnsupportedOperationException("Method getString() invoked on incompatible type "+TYPE.toString().toLowerCase()+".");
-		return (String)VALUE;
+		if(type != Type.STRING)
+			throw new UnsupportedOperationException("Method getString() invoked on incompatible type "+type.toString().toLowerCase()+".");
+		return (String)value;
 	}
-	public Type getType()
-		{return TYPE;}
-	public String getName()
-		{return NAME;}
-	public Object getValue()
-		{return VALUE;}
 }

@@ -1,0 +1,12 @@
+{
+	"SERVER-CONFIG": {
+		"-WebPort": "8080",
+		"-WebURI": "/W2HP",
+		"-WebPath": "pages/index.html",
+		"-ServicePort": "7777",
+		"-UseConfig": "true",
+		"-Config": "config/config.json",
+		"-Dictionary": "config/protocol-dictionary.json",
+		"-Package": "client-server-packets"
+	}
+}
