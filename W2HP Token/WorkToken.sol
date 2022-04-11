@@ -11,6 +11,9 @@ abstract contract WorkToken is ERC20 {
         _workers[_msgSender()].redeemable = 0;
     }
 
+    //11:59:59, april 10th, 2022
+    uint256 constant GENESIS = 1649653199;
+
     //mutable information about work done by account
     struct MinerState { //1 memory slot => 28 bytes
         uint112       work; //14 bytes|Enough to store 5 decillion hashes of work
@@ -39,13 +42,13 @@ abstract contract WorkToken is ERC20 {
     }
 
     function today() internal view returns (uint32) {
-        //TODO: implement day calculation
-        return uint32(block.timestamp/(1 days));
+        return uint32((block.timestamp - GENESIS)/(1 days));
     }
 
     function hashValue(uint256 hash) internal pure returns(uint64){
-        //TODO: implement hashValue calculation
-        return uint64(type(uint256).max - hash);
+        //I really hope this is accurate.
+        //https://bitcoin.stackexchange.com/questions/14086/how-can-i-calculate-network-hashrate-for-a-given-range-of-blocks-where-difficult
+        return uint64(type(uint256).max/(hash+1));
     }
 
 }
