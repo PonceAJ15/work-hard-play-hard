@@ -25,7 +25,9 @@ import clientServerEnums.DataSlot;
 public final class W2HPServer 
 {
 	private W2HPServer()
-		{throw new UnsupportedOperationException("Class W2HPServer is not instantiatable.");}
+		{throw new UnsupportedOperationException(W2HPServer.class.getName()+" is not instantiatable.");}
+	
+	@Getter private static boolean argumentsLoaded = false;
 	
 	//Objects used for internal state management
 	public static final Map<String, Consumer<String>> ARGUMENTS;
@@ -61,17 +63,19 @@ public final class W2HPServer
 	{
 		loadArguments(args);
 		if(useConfig)
-			try //configurations loaded over arguments, reload arguments again. 
+			try //configurations loaded over arguments, reload arguments again.
 				{loadConfig(configPath);loadArguments(args);}
 			catch(IOException e)
 				{throw new ExceptionInInitializerError(e);}
-		loadArguments(args);
+		argumentsLoaded = true;
 		
 		try
 			{packetInterface = new PacketInterfaceFactory(packetConfigPath).getInterface(packetPackage, Packet.class);}
 		catch (IOException | ParseException e)
 			{throw new ExceptionInInitializerError(e);}
 		
+		//good resource for embedded HTTP servers.
+		//https://docs.huihoo.com/jetty/the-definitive-reference/embedding-jetty.html
 		DAppServer dApp = new DAppServer();
 		try
 			{dApp.start();}

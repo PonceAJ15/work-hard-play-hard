@@ -1,11 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<meta charset="ISO-8859-1">
-		<title>W2HP DApp interface</title>
+		<meta charset="UTF-8">
+		<title>W2HP Home</title>
+		<style>
+			html {
+				font-family: consolas;
+			}
+			
+			body {
+				background-color: #012456;
+			}
+			
+			ul {
+				list-style-type: none;
+			}
+			
+			li {
+				display: inline-block;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+			.container {
+				display: flex;
+				justify-content: center;
+				
+			}
+			
+			.window {
+				background-color:black;
+				border-style: solid;
+				border-width: 1px;
+				box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+				margin-top: 1em;
+			}
+			.windowText {
+				color: white;
+			}
+			.title {
+				margin-top: 0em;
+				text-align: left;
+				background-color: white;
+				color: black;
+				font-size: 1em;
+			}
+			.label {
+				background-color: black;
+				color: white;
+			}
+			.label:hover {
+				background-color: white;
+				color: black;
+			}
+			
+		</style>
+		<script type="module">
+			const titles = new Map();
+			titles.set("DApp", "Decentralized Application Interface");
+			titles.set("Config", "Server Configuration");
+			titles.set("About", "About Work Hard Play Hard Protocol");
+			titles.set("Tokenomics", "W2HP ERC-20 Token");
+			
+			document.getElementById("pages").addEventListener("click", changePage);
+			
+			var selection = null;
+			var lastLabel = null;
+			function changePage(event) {
+				if((!event.target.classList.contains("label")) ||
+				        (selection !== null && selection.id === event.target.textContent)) {
+					return;
+				}
+				if(selection !== null) {
+					lastLabel.textContent = lastLabel.textContent.substring(1);
+					selection.style.display = 'none';
+				}
+				lastLabel = event.target;
+				selection = document.getElementById(lastLabel.textContent);
+				selection.style.display = 'inline-block';
+				document.getElementById("view").innerHTML = titles.get(lastLabel.textContent);
+				lastLabel.textContent = ">" + lastLabel.textContent;
+			}
+		</script>
+		<div class="window">
+			<h1 class="title">W2HP Browser Interface</h1>
+			<ul class="container" id="pages">
+				<li>
+					<h1 class="label">DApp</h1>
+				</li>
+				<li>
+					<h1 class="label">Config</h1>
+				</li>
+				<li>
+					<h1 class="label">About</h1>
+				</li>
+				<li>
+					<h1 class="label">Tokenomics</h1>
+				</li>
+			</ul>
+			<div class="scroll">&nbsp;</div>
+		</div>
 	</head>
-<body>
-	<p>Welcome to the W2HP DApp</p>
-	<p>There's nothing here yet!</p>
-</body>
+	<body>
+		<div class="window" id="content">
+			<h1 class="title" id="view">No page selected</h1>
+			<div id="DApp" hidden>
+				<h1 class="label">Update client work</h1>
+				<p class="label">Update client work</p>
+			</div>
+			<div id="Config" hidden>
+				<h1 class="label">Change server settings</h1>
+			</div>
+			<div id="About" hidden>
+				<h1 class="label">We give money, to humans</h1>
+			</div>
+			<div id="Tokenomics" hidden>
+				<h1 class="label">The economy is when green line</h1>
+			</div>
+		</div>
+	</body>
 </html>
