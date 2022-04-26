@@ -75,7 +75,7 @@ contract W2HPToken is IERC20Metadata {
     function tellSecret(bytes32 newSecret) external {
         Account storage worker = _balances[msg.sender];
         require(worker.seed == 0, "W2HP: Account already has a secret.");
-        worker.seed = int64(int256(block.number+1)*-1);
+        worker.seed = int64(int256(block.number+1))*-1;
         _secrets[msg.sender] = newSecret;
     }
     function generateSeed() external {
