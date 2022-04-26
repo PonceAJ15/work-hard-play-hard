@@ -25,71 +25,72 @@ contract W2HPToken is IERC20Metadata {
 
     //submit proof of work to the blockchain.
     function workClaim(bytes32 nonce, bytes32 solution) external returns (bool) {
-        Account storage worker = _balances[msg.sender];
-        uint32 check = worker.checkNum++;
-        int64 seed = worker.seed;
-        bytes32 hash = keccak256(abi.encodePacked(msg.sender,check,seed,nonce));
+        Account memory worker = _balances[msg.sender];
+        bytes32 hash = keccak256(abi.encodePacked(msg.sender,worker.checkNum,worker.seed,nonce));
         uint256 value = type(uint256).max/(uint256(hash)+1);
-        do  {
-            if(seed == 0) {continue;}
-            worker.seed = 0;
-            bytes32 secret = _secrets[msg.sender];
-            if(keccak256(abi.encode(solution)) == secret) {
-                if (seed < 0) {
-                    bytes32 noise = blockhash(uint64(seed*-1));
-                    if(noise == 0) {continue;}
-                    seed = int64(int256(uint256(keccak256(abi.encode(noise^secret)))));
-                    if(seed < 0) {
-                        seed *= -1;
+        if(worker.seed != 0) {
+            do {
+                bytes32 secret = _secrets[msg.sender];
+                if(keccak256(abi.encode(solution)) == secret) {
+                    if (worker.seed < 0) {
+                        bytes32 noise = blockhash(uint64(worker.seed*-1));
+                        if(noise == 0) {continue;}
+                        worker.seed = int64(int256(uint256(keccak256(abi.encode(noise^secret)))));
+                        if(worker.seed < 0) {
+                            worker.seed *= -1;
+                        }
+                    }
+                    bytes8 fun = bytes8(uint64(worker.seed))^bytes8(solution);
+                    hash = keccak256(abi.encodePacked(msg.sender,worker.checkNum,fun,hash));
+                    //Only those who know the solution can calculate the true value
+                    //of any given proof of work nonce. This makes attacks against 
+                    //mining collectives ineffective and allows the EVM to effectively
+                    //verify `mul` nonces worth of work from 1 sample nonce. 
+                    uint256 mul = type(uint256).max/(uint256(hash)+1);
+                    if(mul > 255) {
+                        value *= mul;
                     }
                 }
-                bytes8 fun = bytes8(uint64(seed))^bytes8(solution);
-                hash = keccak256(abi.encodePacked(msg.sender,check,fun,hash));
-                //Only those who know the solution can calculate the true value
-                //of any given proof of work nonce. This makes attacks against 
-                //mining collectives ineffective and allows the EVM to effectively
-                //verify `mul` nonces worth of work from 1 sample nonce. 
-                uint256 mul = type(uint256).max/(uint256(hash)+1);
-                if(mul > 255) {
-                    value *= mul;
-                }
-            }
-        } while(false);
+            } while(false);
+            worker.seed = int64(int256(block.number+1)*-1);
+            _secrets[msg.sender] = solution;
+        }
+        worker.checkNum++;
         uint80 work = uint80(value/HEXA_HASH);
-        if(worker.lastActive == today()) {
+        uint24 today = uint24((block.timestamp - GENESIS)/(1 days));
+        if(worker.lastActive == today) {
             worker.work += work;
         }else if(worker.lastActive == 0) {
-            worker.lastActive = today();
+            worker.lastActive = today;
             worker.work += work;
         }else {
             uint56 amount = uint56((MINT_LIMIT*worker.work)/_totalWorks[worker.lastActive]);
             _totalSupply += amount;
             worker.balance += amount;
             emit Transfer(address(0), msg.sender, amount);
-            worker.lastActive = today();
+            worker.lastActive = today;
             worker.work = work;
         }
-        _totalWorks[today()] += work;
+        _balances[msg.sender] = worker;
+        _totalWorks[today] += work;
         return true;
     }
     function tellSecret(bytes32 newSecret) external {
-        Account storage worker = _balances[msg.sender];
-        require(worker.seed == 0, "W2HP: Account already has a secret.");
+        Account memory worker = _balances[msg.sender];
         worker.seed = int64(int256(block.number+1))*-1;
+        worker.checkNum++;
         _secrets[msg.sender] = newSecret;
+        _balances[msg.sender] = worker;
     }
     function generateSeed() external {
-        Account storage worker = _balances[msg.sender];
+        Account memory worker = _balances[msg.sender];
         bytes32 noise = blockhash(uint64(worker.seed*-1));
         require(worker.seed < 0 && noise != 0, "W2HP: Seed can not be generated.");
-        int64 newSeed = int64(int256(uint256(keccak256(abi.encode(noise^_secrets[msg.sender])))));
-        if(newSeed < 0) {
-            newSeed *= -1;
+        worker.seed = int64(int256(uint256(keccak256(abi.encode(noise^_secrets[msg.sender])))));
+        if(worker.seed < 0) {
+            worker.seed *= -1;
         }
-        worker.seed = newSeed;
-    }
-    function today() internal view returns (uint24) {
-        return uint24((block.timestamp - GENESIS)/(1 days));
+        _balances[msg.sender] = worker;
     }
 
     //Everything below this comment is code modified from the OpenZepplin ERC20 standard.
