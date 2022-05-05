@@ -18,6 +18,8 @@ contract WorkDistributedToken is IBEP20 {
     uint16 internal constant TRANSACTION_GAS = 11600;
     uint256 internal constant WORK_DAY = 1 days;
     uint256 internal constant MAX_INT = type(uint256).max;
+    uint8 internal constant NO_REENTRY = 1;
+    uint8 internal constant REENTRY = 2;
     //April 20th, 00h:00m:00s 2022 GMT-0500 Central Daylight Time
     uint256 internal constant GENESIS = 1650430800;
 
@@ -31,6 +33,7 @@ contract WorkDistributedToken is IBEP20 {
     }
 
     address internal _owner;
+    uint8 internal _reentry = NO_REENTRY;
     mapping(address => Account) public _balances;
     mapping(address => mapping(address => uint256)) public _allowances;
     mapping(uint24 => uint256) public _totalWorks;
@@ -68,7 +71,7 @@ contract WorkDistributedToken is IBEP20 {
                 //Generate a new seed if the users seed is more than 2 blocks old.
                 uint64 newSeed = uint64(uint256(blockhash(block.number-1))) | SEED_BIT;
                 uint64 prevSeed = uint64(uint256(blockhash(block.number-2))) | SEED_BIT;
-                if(newSeed != worker.seed && prevSeed != worker.seed && worker.seed >= SEED_BIT)
+                if(newSeed != worker.seed && prevSeed != worker.seed)
                     worker.seed = newSeed;
                 break;
             }
@@ -115,27 +118,27 @@ contract WorkDistributedToken is IBEP20 {
         //The hash of the secret is committed to the blockchain.
         _secrets[msg.sender] = newSecret;
     }
-    function forgetSeed() external {
-        _balances[msg.sender].seed = 0;
-    }
     //Funds sent to the contract are released by burning tokens.
     receive() external payable {}
     //Special burn functions
     function burn(uint256 amount, address[] calldata tokens) external {
-        _tokenRebate(msg.sender, amount, tokens);
         _burn(msg.sender, amount);
+        _tokenRebate(msg.sender, amount, tokens);
     }
     function burnFrom(address account, uint256 amount, address[] calldata tokens) external {
-        _tokenRebate(msg.sender, amount, tokens);
         _spendAllowance(account, msg.sender, amount);
         _burn(msg.sender, amount);
+        _tokenRebate(msg.sender, amount, tokens);
     }
     function _tokenRebate(address account, uint256 amount, address[] calldata tokens) internal {
+        require(_reentry == NO_REENTRY, "https://www.youtube.com/watch?v=93Fyv4XAr-A");
+        _reentry = REENTRY;
         address self = address(this);
         for(uint i = 0; i < tokens.length; i++) {
             IBEP20 token = IBEP20(tokens[i]);
-            token.transfer(account, (token.balanceOf(self)*amount)/totalSupply());
+            token.transfer(account, (token.balanceOf(self)*amount)/(_totalSupply+amount));
         }
+        _reentry = NO_REENTRY;
     }
     //Function necessary for compliance with IBEP20 standard.
     function getOwner() external view override returns(address) {
