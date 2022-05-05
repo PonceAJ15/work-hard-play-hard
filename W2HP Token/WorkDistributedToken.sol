@@ -59,16 +59,22 @@ contract WorkDistributedToken is IBEP20 {
                     value = MAX_INT/hash;
                 }
                 //Use the solution bytes to generate a private seed for proof of work multiplication
-                worker.seed = uint64(worker.seed^uint256(solution));
+                uint64 privateSeed = uint64(worker.seed^uint256(solution));
                 //Estimate the amount of nonces needed to get this secret value, then multiply the work estimate.
-                hash = uint256(keccak256(abi.encodePacked(msg.sender,uint32(worker.checkNum),worker.seed,hash)));
+                hash = uint256(keccak256(abi.encodePacked(msg.sender,uint32(worker.checkNum),privateSeed,hash)));
                 value *= MAX_INT/hash;
                 //Store the solution as the next secret. This allows for secret value chaining.
                 _secrets[msg.sender] = solution;
+                //Generate a new seed if the users seed is more than 2 blocks old.
+                uint64 newSeed = uint64(uint256(blockhash(block.number-1))) | SEED_BIT;
+                uint64 prevSeed = uint64(uint256(blockhash(block.number-2))) | SEED_BIT;
+                if(newSeed != worker.seed && prevSeed != worker.seed && worker.seed >= SEED_BIT)
+                    worker.seed = newSeed;
                 break;
             }
-            //Commit to use the next block as a noise source. This allows for secret value chaining.
-            worker.seed = uint64(block.number+1);
+            //If by this point a seed has yet to be generated, commit to use the next blockhash.
+            if(worker.seed < SEED_BIT)
+                worker.seed = uint64(uint256(block.number+1));
         }
         //Now that the work value has calculated, the checknum can be incremented.
         worker.checkNum++;
