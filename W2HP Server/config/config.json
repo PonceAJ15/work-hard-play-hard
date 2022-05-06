@@ -6,7 +6,15 @@
 		"-ServicePort": "7777",
 		"-UseConfig": "true",
 		"-Config": "config/config.json",
-		"-Dictionary": "config/protocol-dictionary.json",
-		"-Package": "client-server-packets"
+		"-WorkFile": "work/work.W2HPKEYS",
+		"-ChainId": "56",
+		"-Target": "100000",
+		"-Entries": "65536",
+		"-GenKeys": "false",
+		"-Address": "0xC26A74725f372b2ad76501797c6c678e0fB79e05",
+		"-Seed": "0xA6BB383B6CBFD813",
+		"-CheckNum": "0x00000000",
+		"-Token": "0x8b7555148E1628a754dB870B5aE9C325BcCDBAd0",
+		"-ServiceURI": "/WHPH"
 	}
 }

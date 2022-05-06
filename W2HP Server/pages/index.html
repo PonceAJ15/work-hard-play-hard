@@ -57,10 +57,31 @@
 		</style>
 		<script type="module">
 			const titles = new Map();
+			const ethereumButton = document.querySelector('.enableEthereumButton');
 			titles.set("DApp", "Decentralized Application Interface");
 			titles.set("Config", "Server Configuration");
 			titles.set("About", "About Work Hard Play Hard Protocol");
 			titles.set("Tokenomics", "W2HP ERC-20 Token");
+			
+			//const Web3 = require("web3");
+			const ethEnabled = async () => {
+				ethereum.request({ method: 'eth_requestAccounts' });
+				window.web3 = new Web3(window.ethereum);
+				var account = ethereum.selectedAddress;
+				console.log("Hello,");
+				console.log(account);
+				console.log("!");
+				return true;
+			}
+			
+			
+
+			ethereumButton.addEventListener('click', () => {
+				//Will Start the metamask extension
+				ethereum.request({ method: 'eth_requestAccounts' });
+			});
+			
+			
 			
 			document.getElementById("pages").addEventListener("click", changePage);
 			
@@ -106,7 +127,12 @@
 			<h1 class="title" id="view">No page selected</h1>
 			<div id="DApp" hidden>
 				<h1 class="label">Update client work</h1>
-				<p class="label">Update client work</p>
+				<form >
+					<button class="enableEthereumButton">Enable Ethereum</button>
+					<label for="nonce" style="color: white">Enter Nonce:</label>
+					<input type="text" id="nonce" name="nonce"><br><br>
+					<label for="address" style="color: white">Enter Adress
+				</form>
 			</div>
 			<div id="Config" hidden>
 				<h1 class="label">Change server settings</h1>
